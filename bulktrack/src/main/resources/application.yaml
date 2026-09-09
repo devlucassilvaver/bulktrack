@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: bulktrack
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/bulktrack
+    username: root
+    password: "@Mutare2025"
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
