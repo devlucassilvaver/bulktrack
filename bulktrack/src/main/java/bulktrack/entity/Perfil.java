@@ -4,6 +4,7 @@ import bulktrack.enums.NivelAtividade;
 import bulktrack.enums.Objetivo;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -15,7 +16,7 @@ public class Perfil {
     private Long id;
 
     private String nome;
-    private LocalDateTime dataNascimento;
+    private LocalDate dataNascimento;
     private BigDecimal altura, pesoAtual, percentualObjetivo;
 
     @Enumerated(EnumType.STRING)
@@ -24,7 +25,7 @@ public class Perfil {
     @Enumerated(EnumType.STRING)
     private Objetivo objetivo;
 
-    public Perfil(String nome, LocalDateTime dataNascimento, BigDecimal altura, BigDecimal pesoAtual, BigDecimal percentualObjetivo, NivelAtividade nivelAtividade, Objetivo objetivo) {
+    public Perfil(String nome, LocalDate dataNascimento, BigDecimal altura, BigDecimal pesoAtual, BigDecimal percentualObjetivo, NivelAtividade nivelAtividade, Objetivo objetivo) {
         this.nome = nome;
         this.dataNascimento = dataNascimento;
         this.altura = altura;
@@ -46,11 +47,11 @@ public class Perfil {
         this.nome = nome;
     }
 
-    public LocalDateTime getDataNascimento() {
+    public LocalDate getDataNascimento() {
         return dataNascimento;
     }
 
-    public void setDataNascimento(LocalDateTime dataNascimento) {
+    public void setDataNascimento(LocalDate dataNascimento) {
         this.dataNascimento = dataNascimento;
     }
 
