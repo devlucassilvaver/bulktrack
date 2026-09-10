@@ -18,6 +18,7 @@ public class PerfilService {
         Perfil perfil = new Perfil(
                 request.getNome(),
                 request.getDataNascimento(),
+                request.getSexo(),
                 request.getAltura(),
                 request.getPesoAtual(),
                 request.getPercentualObjetivo(),

@@ -2,6 +2,7 @@ package bulktrack.dto;
 
 import bulktrack.enums.NivelAtividade;
 import bulktrack.enums.Objetivo;
+import bulktrack.enums.Sexo;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -15,6 +16,7 @@ public class PerfilResponse {
     private NivelAtividade nivelAtividade;
     private Objetivo objetivo;
     private BigDecimal percentualObjetivo;
+    private Sexo sexo;
 
     public Long getId() {
         return id;
@@ -78,5 +80,13 @@ public class PerfilResponse {
 
     public void setPercentualObjetivo(BigDecimal percentualObjetivo) {
         this.percentualObjetivo = percentualObjetivo;
+    }
+
+    public Sexo getSexo() {
+        return sexo;
+    }
+
+    public void setSexo(Sexo sexo) {
+        this.sexo = sexo;
     }
 }

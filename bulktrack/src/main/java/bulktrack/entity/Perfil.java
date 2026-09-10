@@ -2,10 +2,10 @@ package bulktrack.entity;
 
 import bulktrack.enums.NivelAtividade;
 import bulktrack.enums.Objetivo;
+import bulktrack.enums.Sexo;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 
@@ -25,9 +25,13 @@ public class Perfil {
     @Enumerated(EnumType.STRING)
     private Objetivo objetivo;
 
-    public Perfil(String nome, LocalDate dataNascimento, BigDecimal altura, BigDecimal pesoAtual, BigDecimal percentualObjetivo, NivelAtividade nivelAtividade, Objetivo objetivo) {
+    @Enumerated(EnumType.STRING)
+    private Sexo sexo;
+
+    public Perfil(String nome, LocalDate dataNascimento, Sexo sexo, BigDecimal altura, BigDecimal pesoAtual, BigDecimal percentualObjetivo, NivelAtividade nivelAtividade, Objetivo objetivo) {
         this.nome = nome;
         this.dataNascimento = dataNascimento;
+        this.sexo = sexo;
         this.altura = altura;
         this.pesoAtual = pesoAtual;
         this.percentualObjetivo = percentualObjetivo;
@@ -93,5 +97,13 @@ public class Perfil {
 
     public void setObjetivo(Objetivo objetivo) {
         this.objetivo = objetivo;
+    }
+
+    public Sexo getSexo() {
+        return sexo;
+    }
+
+    public void setSexo(Sexo sexo) {
+        this.sexo = sexo;
     }
 }

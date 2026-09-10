@@ -2,6 +2,7 @@ package bulktrack.dto;
 
 import bulktrack.enums.NivelAtividade;
 import bulktrack.enums.Objetivo;
+import bulktrack.enums.Sexo;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -33,6 +34,9 @@ public class PerfilRequest {
     @NotNull
     @Positive
     private BigDecimal percentualObjetivo;
+
+    @NotNull
+    private Sexo sexo;
 
     public String getNome() {
         return nome;
@@ -88,5 +92,13 @@ public class PerfilRequest {
 
     public void setObjetivo(Objetivo objetivo) {
         this.objetivo = objetivo;
+    }
+
+    public Sexo getSexo() {
+        return sexo;
+    }
+
+    public void setSexo(Sexo sexo) {
+        this.sexo = sexo;
     }
 }
