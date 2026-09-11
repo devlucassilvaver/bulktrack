@@ -32,6 +32,7 @@ public class PerfilService {
         response.setId(perfilSalvo.getId());
         response.setNome(perfilSalvo.getNome());
         response.setDataNascimento(perfilSalvo.getDataNascimento());
+        response.setSexo(perfilSalvo.getSexo());
         response.setAltura(perfilSalvo.getAltura());
         response.setPesoAtual(perfilSalvo.getPesoAtual());
         response.setPercentualObjetivo(perfilSalvo.getPercentualObjetivo());
@@ -40,4 +41,5 @@ public class PerfilService {
 
         return response;
     }
+
 }
