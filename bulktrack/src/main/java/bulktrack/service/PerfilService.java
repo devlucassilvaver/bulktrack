@@ -3,13 +3,13 @@ package bulktrack.service;
 import bulktrack.dto.PerfilRequest;
 import bulktrack.dto.PerfilResponse;
 import bulktrack.entity.Perfil;
+import bulktrack.exception.PerfilNaoEncontratoException;
 import bulktrack.repository.PerfilRepository;
 import org.springframework.stereotype.Service;
 
 @Service
 public class PerfilService {
     private final PerfilRepository perfilRepository;
-
     public PerfilService(PerfilRepository perfilRepository){
         this.perfilRepository = perfilRepository;
     }
@@ -42,4 +42,24 @@ public class PerfilService {
         return response;
     }
 
+    public PerfilResponse buscarPorId(Long id){
+        Perfil perfil = perfilRepository
+                .findById(id)
+                .orElseThrow(() -> new PerfilNaoEncontratoException(
+                        "Perfil não encontrado"
+                ));
+
+        PerfilResponse response = new PerfilResponse();
+        response.setId(perfil.getId());
+        response.setNome(perfil.getNome());
+        response.setDataNascimento(perfil.getDataNascimento());
+        response.setSexo(perfil.getSexo());
+        response.setAltura(perfil.getAltura());
+        response.setPesoAtual(perfil.getPesoAtual());
+        response.setPercentualObjetivo(perfil.getPercentualObjetivo());
+        response.setNivelAtividade(perfil.getNivelAtividade());
+        response.setObjetivo(perfil.getObjetivo());
+
+        return response;
+    }
 }

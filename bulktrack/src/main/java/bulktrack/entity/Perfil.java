@@ -39,6 +39,9 @@ public class Perfil {
         this.objetivo = objetivo;
     }
 
+    public Perfil() {
+    }
+
     public Long getId() {
         return id;
     }
