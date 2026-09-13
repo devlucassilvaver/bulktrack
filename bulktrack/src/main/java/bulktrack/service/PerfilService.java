@@ -3,18 +3,27 @@ package bulktrack.service;
 import bulktrack.dto.PerfilRequest;
 import bulktrack.dto.PerfilResponse;
 import bulktrack.entity.Perfil;
+import bulktrack.enums.Sexo;
 import bulktrack.exception.PerfilNaoEncontratoException;
 import bulktrack.repository.PerfilRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.time.Period;
 
 @Service
 public class PerfilService {
     private final PerfilRepository perfilRepository;
-    public PerfilService(PerfilRepository perfilRepository){
+
+    public PerfilService(PerfilRepository perfilRepository) {
         this.perfilRepository = perfilRepository;
     }
 
-    public PerfilResponse criarPerfil(PerfilRequest request){
+    public PerfilResponse criarPerfil(PerfilRequest request) {
         Perfil perfil = new Perfil(
                 request.getNome(),
                 request.getDataNascimento(),
@@ -42,7 +51,7 @@ public class PerfilService {
         return response;
     }
 
-    public PerfilResponse buscarPorId(Long id){
+    public PerfilResponse buscarPorId(Long id) {
         Perfil perfil = perfilRepository
                 .findById(id)
                 .orElseThrow(() -> new PerfilNaoEncontratoException(
@@ -61,5 +70,37 @@ public class PerfilService {
         response.setObjetivo(perfil.getObjetivo());
 
         return response;
+    }
+
+    public BigDecimal calcularTMB(Perfil perfil, Long id) {
+
+        var pessoa = buscarPorId(id);
+        var pessoaSexo = pessoa.getSexo();
+
+        var anoHoje = LocalDate.now();
+        var dataNascimento = perfil.getDataNascimento();
+        Period idade = Period.between(dataNascimento, anoHoje);
+
+        BigDecimal alturaCm = perfil.getAltura()
+                .multiply(BigDecimal.valueOf(100))
+                .setScale(0, RoundingMode.HALF_UP);
+
+        BigDecimal peso = perfil.getPesoAtual();
+        BigDecimal idadeAnos = BigDecimal.valueOf(idade.getYears());
+
+        BigDecimal tmbBase = BigDecimal.valueOf(10).multiply(peso)
+                .add(BigDecimal.valueOf(6.25).multiply(alturaCm))
+                .subtract(BigDecimal.valueOf(5).multiply(idadeAnos));
+
+        if (pessoaSexo == Sexo.MASCULINO) {
+            return tmbBase.add(BigDecimal.valueOf(5));
+        } else if (pessoaSexo == Sexo.FEMININO) {
+            return tmbBase.subtract(BigDecimal.valueOf(161));
+        }
+
+        throw new PerfilNaoEncontratoException(
+                "Perfil não encontrado"
+        );
+
     }
 }
