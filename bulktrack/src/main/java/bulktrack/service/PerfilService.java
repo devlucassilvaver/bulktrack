@@ -4,10 +4,8 @@ import bulktrack.dto.PerfilRequest;
 import bulktrack.dto.PerfilResponse;
 import bulktrack.entity.Perfil;
 import bulktrack.enums.Sexo;
-import bulktrack.exception.PerfilNaoEncontratoException;
+import bulktrack.exception.PerfilNaoEncontradoException;
 import bulktrack.repository.PerfilRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -54,7 +52,7 @@ public class PerfilService {
     public PerfilResponse buscarPorId(Long id) {
         Perfil perfil = perfilRepository
                 .findById(id)
-                .orElseThrow(() -> new PerfilNaoEncontratoException(
+                .orElseThrow(() -> new PerfilNaoEncontradoException(
                         "Perfil não encontrado"
                 ));
 
@@ -72,10 +70,8 @@ public class PerfilService {
         return response;
     }
 
-    public BigDecimal calcularTMB(Perfil perfil, Long id) {
-
-        var pessoa = buscarPorId(id);
-        var pessoaSexo = pessoa.getSexo();
+    public BigDecimal calcularTMB(Long id) {
+        Perfil perfil = buscarEntidadePorId(id);
 
         var anoHoje = LocalDate.now();
         var dataNascimento = perfil.getDataNascimento();
@@ -92,15 +88,25 @@ public class PerfilService {
                 .add(BigDecimal.valueOf(6.25).multiply(alturaCm))
                 .subtract(BigDecimal.valueOf(5).multiply(idadeAnos));
 
-        if (pessoaSexo == Sexo.MASCULINO) {
+        if (perfil.getSexo() == Sexo.MASCULINO) {
             return tmbBase.add(BigDecimal.valueOf(5));
-        } else if (pessoaSexo == Sexo.FEMININO) {
+        } else if (perfil.getSexo() == Sexo.FEMININO) {
             return tmbBase.subtract(BigDecimal.valueOf(161));
         }
 
-        throw new PerfilNaoEncontratoException(
+        throw new PerfilNaoEncontradoException(
                 "Perfil não encontrado"
         );
 
+    }
+
+    private Perfil buscarEntidadePorId(Long id){
+        Perfil busca = perfilRepository
+                .findById(id)
+                .orElseThrow(() -> new PerfilNaoEncontradoException(
+                                "Perfil não encontrado."
+                        )
+                );
+        return busca;
     }
 }
