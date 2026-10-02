@@ -40,4 +40,9 @@ public class PerfilController {
         return perfilService.calcularTMB(id);
     }
 
+    @GetMapping("{id}/tmt")
+    public BigDecimal calcularTMT(@PathVariable Long id){
+        return perfilService.calcularTMT(id);
+    }
+
 }

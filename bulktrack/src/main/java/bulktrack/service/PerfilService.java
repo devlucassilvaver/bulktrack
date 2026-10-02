@@ -3,6 +3,7 @@ package bulktrack.service;
 import bulktrack.dto.PerfilRequest;
 import bulktrack.dto.PerfilResponse;
 import bulktrack.entity.Perfil;
+import bulktrack.enums.NivelAtividade;
 import bulktrack.enums.Sexo;
 import bulktrack.exception.PerfilNaoEncontradoException;
 import bulktrack.repository.PerfilRepository;
@@ -95,9 +96,31 @@ public class PerfilService {
         }
 
         throw new PerfilNaoEncontradoException(
-                "Perfil não encontrado"
+                "Perfil não encontrado."
         );
 
+    }
+
+    public BigDecimal calcularTMT(Long id) {
+        Perfil perfil = buscarEntidadePorId(id);
+
+        BigDecimal nivelAtividade;
+
+        if (perfil.getNivelAtividade() == NivelAtividade.SEDENTARIO) {
+            nivelAtividade = BigDecimal.valueOf(1.2);
+        } else if (perfil.getNivelAtividade() == NivelAtividade.LEVE) {
+            nivelAtividade = BigDecimal.valueOf(1.38);
+        } else if (perfil.getNivelAtividade() == NivelAtividade.MODERADO) {
+            nivelAtividade = BigDecimal.valueOf(1.55);
+        } else if (perfil.getNivelAtividade() == NivelAtividade.ALTO) {
+            nivelAtividade = BigDecimal.valueOf(1.73);
+        } else {
+            nivelAtividade = BigDecimal.valueOf(1.9);
+        }
+
+        BigDecimal tmt = calcularTMB(id).multiply(nivelAtividade);
+
+        return tmt;
     }
 
     private Perfil buscarEntidadePorId(Long id){
