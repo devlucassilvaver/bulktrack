@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+
 @RestController
 @RequestMapping("/perfis")
 public class PerfilController {
@@ -32,4 +34,10 @@ public class PerfilController {
     public PerfilResponse buscarPorId(@PathVariable Long id){
         return perfilService.buscarPorId(id);
     }
+
+    @GetMapping("{id}/tmb")
+    public BigDecimal calcularTMB(@PathVariable Long id){
+        return perfilService.calcularTMB(id);
+    }
+
 }
