@@ -4,6 +4,7 @@ import bulktrack.dto.PerfilRequest;
 import bulktrack.dto.PerfilResponse;
 import bulktrack.entity.Perfil;
 import bulktrack.enums.NivelAtividade;
+import bulktrack.enums.Objetivo;
 import bulktrack.enums.Sexo;
 import bulktrack.exception.PerfilNaoEncontradoException;
 import bulktrack.repository.PerfilRepository;
@@ -121,6 +122,29 @@ public class PerfilService {
         BigDecimal tmt = calcularTMB(id).multiply(nivelAtividade);
 
         return tmt;
+    }
+
+    public BigDecimal calcularMetaCalorica(Long id){
+        Perfil perfil = buscarEntidadePorId(id);
+        BigDecimal tmt = calcularTMT(id);
+        BigDecimal metaCalorica;
+
+        BigDecimal taxa = perfil.getPercentualObjetivo()
+                .divide(BigDecimal.valueOf(100));
+        BigDecimal valorTaxa = tmt.multiply(taxa);
+
+        if (perfil.getObjetivo() == Objetivo.PERDA_GORDURA){
+            metaCalorica = tmt.subtract(valorTaxa);
+
+        } else if (perfil.getObjetivo() == Objetivo.GANHO_MUSCULAR){
+            metaCalorica = tmt.add(valorTaxa);
+
+        } else {
+            metaCalorica = tmt;
+        }
+
+        return metaCalorica;
+
     }
 
     private Perfil buscarEntidadePorId(Long id){

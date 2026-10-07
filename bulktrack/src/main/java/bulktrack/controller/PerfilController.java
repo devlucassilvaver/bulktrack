@@ -45,4 +45,9 @@ public class PerfilController {
         return perfilService.calcularTMT(id);
     }
 
+    @GetMapping("{id}/calorias")
+    public BigDecimal calcularMetaCalorica(@PathVariable Long id){
+        return perfilService.calcularMetaCalorica(id);
+    }
+
 }
