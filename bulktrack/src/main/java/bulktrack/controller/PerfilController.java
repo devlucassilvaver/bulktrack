@@ -1,5 +1,6 @@
 package bulktrack.controller;
 
+import bulktrack.dto.HistoricoPesoRequest;
 import bulktrack.dto.PerfilRequest;
 import bulktrack.dto.PerfilResponse;
 import bulktrack.entity.Perfil;
@@ -28,6 +29,16 @@ public class PerfilController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(perfil);
+    }
+
+    @PostMapping("{id}/pesos")
+    public ResponseEntity<Void> registrarPeso(
+            @PathVariable Long id,
+            @Valid @RequestBody HistoricoPesoRequest request){
+
+        perfilService.registrarPeso(id, request);
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @GetMapping("{id}")

@@ -1,12 +1,15 @@
 package bulktrack.service;
 
+import bulktrack.dto.HistoricoPesoRequest;
 import bulktrack.dto.PerfilRequest;
 import bulktrack.dto.PerfilResponse;
+import bulktrack.entity.HistoricoPeso;
 import bulktrack.entity.Perfil;
 import bulktrack.enums.NivelAtividade;
 import bulktrack.enums.Objetivo;
 import bulktrack.enums.Sexo;
 import bulktrack.exception.PerfilNaoEncontradoException;
+import bulktrack.repository.HistoricoPesoRepository;
 import bulktrack.repository.PerfilRepository;
 import org.springframework.stereotype.Service;
 
@@ -18,9 +21,11 @@ import java.time.Period;
 @Service
 public class PerfilService {
     private final PerfilRepository perfilRepository;
+    private final HistoricoPesoRepository historicoPesoRepository;
 
-    public PerfilService(PerfilRepository perfilRepository) {
+    public PerfilService(PerfilRepository perfilRepository, HistoricoPesoRepository historicoPesoRepository) {
         this.perfilRepository = perfilRepository;
+        this.historicoPesoRepository = historicoPesoRepository;
     }
 
     public PerfilResponse criarPerfil(PerfilRequest request) {
@@ -156,4 +161,17 @@ public class PerfilService {
                 );
         return busca;
     }
+
+    public void registrarPeso(Long id, HistoricoPesoRequest request){
+        Perfil perfil = buscarEntidadePorId(id);
+        HistoricoPeso historicoPeso = new HistoricoPeso();
+
+        historicoPeso.setPeso(request.getPeso());
+        historicoPeso.setData(request.getData());
+        historicoPeso.setPerfil(perfil);
+
+        historicoPesoRepository.save(historicoPeso);
+    }
+
+
 }

@@ -6,6 +6,7 @@ import bulktrack.enums.Sexo;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 
@@ -27,6 +28,9 @@ public class Perfil {
 
     @Enumerated(EnumType.STRING)
     private Sexo sexo;
+
+    @OneToMany(mappedBy = "perfil")
+    private List<HistoricoPeso> historicoPeso;
 
     public Perfil(String nome, LocalDate dataNascimento, Sexo sexo, BigDecimal altura, BigDecimal pesoAtual, BigDecimal percentualObjetivo, NivelAtividade nivelAtividade, Objetivo objetivo) {
         this.nome = nome;
