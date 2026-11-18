@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BulkTrack</title>
+  <link rel="stylesheet" href="/assets/style.css">
+  <script type="module" src="/assets/app.js"></script>
+</head>
+<body>
+<header class="topo">
+  <div class="limite barra">
+    <a class="marca" href="#dashboard">Bulk<span>Track</span></a>
+    <nav aria-label="Menu principal">
+      <a href="#dashboard">Dashboard</a>
+      <a href="#alimentacao">Alimentação</a>
+      <a href="#treinos">Treinos</a>
+      <a href="#perfil">Perfil</a>
+    </nav>
+    <button id="sair" type="button" class="secundario">Sair</button>
+  </div>
+</header>
+<main class="limite">
+  <p id="status" role="status" aria-live="polite">Carregando…</p>
+  <section id="dashboard" hidden>
+    <div class="cabecalho"><h1>Dashboard</h1><label>Data <input id="dia" type="date" min="1900-01-01" max="9998-12-31"></label></div>
+    <div id="resumo" class="grade"></div>
+    <div class="painel">
+      <div class="cabecalho"><h2>Diário alimentar</h2><a class="acao" href="#alimentacao">Registrar alimento</a></div>
+      <div id="diario"></div>
+    </div>
+  </section>
+  <section id="alimentacao" hidden>
+    <h1>Alimentação</h1>
+    <div class="pilha">
+      <form id="busca" class="painel">
+        <h2>Buscar alimento</h2>
+        <label>Nome do alimento <input name="q" required maxlength="120" placeholder="Ex.: arroz cozido"></label>
+        <button>Buscar no USDA</button>
+        <div id="resultados" aria-live="polite"></div>
+      </form>
+      <form id="consumo" class="painel">
+        <h2 id="titulo-consumo">Registrar consumo</h2>
+        <p id="selecionado" hidden></p>
+        <fieldset id="manual">
+          <legend>Alimento manual</legend>
+          <label>Nome <input name="nome" required maxlength="255"></label>
+          <div id="nutrientes-manuais" class="campos"></div>
+          <p class="nota">Preencha os nutrientes por 100 g. Deixe em branco os valores desconhecidos.</p>
+        </fieldset>
+        <div class="campos">
+          <label>Quantidade (g) <input name="gramas" type="number" min="0.01" max="99999.99" step="0.01" required></label>
+          <label>Data e horário <input name="horario" type="datetime-local" required></label>
+        </div>
+        <p id="previa" role="status"></p>
+        <div class="acoes"><button>Salvar consumo</button><button type="button" id="limpar-consumo" class="secundario">Limpar</button></div>
+      </form>
+    </div>
+  </section>
+  <section id="treinos" hidden>
+    <h1>Treinos</h1>
+    <div class="pilha">
+      <form id="treino" class="painel">
+        <h2 id="titulo-treino">Nova sessão</h2>
+        <div class="campos">
+          <label>Nome da sessão <input name="nome" required maxlength="120"></label>
+          <label>Data <input name="data" type="date" required min="1900-01-01" max="9998-12-31"></label>
+        </div>
+        <div id="exercicios"></div>
+        <div class="acoes">
+          <button type="button" id="novo-exercicio" class="secundario">Adicionar exercício</button>
+          <button>Salvar sessão</button>
+          <button type="button" id="limpar-treino" class="secundario">Limpar</button>
+        </div>
+      </form>
+      <div class="painel">
+        <div class="cabecalho"><h2>Histórico</h2><label>Filtrar por data <input id="filtro-treino" type="date"></label></div>
+        <div id="historico-treinos"></div>
+      </div>
+    </div>
+  </section>
+  <section id="perfil" hidden>
+    <h1>Perfil</h1>
+    <div class="pilha">
+      <form id="editar-perfil" class="painel">
+        <h2>Dados e metas</h2>
+        <p id="estimativa"></p>
+        <div class="campos">
+          <label>Nome <input name="nome" required maxlength="255"></label>
+          <label>Nascimento <input name="dataNascimento" type="date" required></label>
+          <label>Altura (m) <input name="altura" type="number" min="0.50" max="2.80" step="0.01" required></label>
+          <label>Peso atual (kg) <input name="pesoAtual" type="number" min="1" max="700" step="0.01" required></label>
+          <label>Identidade informada (opcional)
+            <select name="sexo"><option value="">Prefiro não informar</option><option value="FEMININO">Feminino</option><option value="MASCULINO">Masculino</option></select>
+          </label>
+          <label>Parâmetro fisiológico da TMB
+            <select name="parametroTmb" required>
+              <option value="">Selecione</option><option value="MAIS_5">Equação masculina (+5 kcal)</option><option value="MENOS_161">Equação feminina (−161 kcal)</option>
+            </select>
+          </label>
+          <label>Atividade
+            <select name="nivelAtividade"><option value="SEDENTARIO">Sedentário</option><option value="LEVE">Leve</option><option value="MODERADO">Moderado</option><option value="ALTO">Alto</option><option value="MUITO_ALTO">Muito alto</option></select>
+          </label>
+          <label>Objetivo
+            <select name="objetivo"><option value="MANUTENCAO">Manutenção</option><option value="GANHO_MUSCULAR">Ganho muscular</option><option value="PERDA_GORDURA">Perda de gordura</option></select>
+          </label>
+          <label>Ajuste por objetivo (%) <input name="percentualObjetivo" type="number" min="0" max="50" step="0.01" placeholder="Padrão do objetivo"></label>
+          <label>Fuso horário (IANA) <input name="fuso" value="America/Fortaleza" maxlength="64" required></label>
+        </div>
+        <label class="check"><input id="personalizar" type="checkbox"> Usar metas personalizadas</label>
+        <fieldset id="metas" disabled hidden><legend>Metas diárias</legend><div id="campos-meta" class="campos"></div></fieldset>
+        <button>Salvar perfil</button>
+      </form>
+      <form id="pesagem" class="painel" hidden>
+        <h2>Histórico de peso</h2>
+        <div class="campos">
+          <label>Peso (kg) <input name="peso" type="number" min="1" max="700" step="0.01" required></label>
+          <label>Data da pesagem <input name="data" type="date" required></label>
+        </div>
+        <button>Registrar pesagem</button>
+        <ul id="historico-peso"></ul>
+      </form>
+    </div>
+  </section>
+</main>
+</body>
+</html>
