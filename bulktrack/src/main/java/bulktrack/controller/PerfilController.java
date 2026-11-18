@@ -1,64 +1,68 @@
 package bulktrack.controller;
 
-import bulktrack.dto.HistoricoPesoRequest;
-import bulktrack.dto.PerfilRequest;
-import bulktrack.dto.PerfilResponse;
-import bulktrack.entity.Perfil;
+import bulktrack.dto.*;
 import bulktrack.service.PerfilService;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.math.BigDecimal;
+import java.security.Principal;
+import java.util.List;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/perfis")
 public class PerfilController {
-    private final PerfilService perfilService;
+    private final PerfilService perfis;
 
-    public PerfilController(PerfilService perfilService){
-        this.perfilService = perfilService;
+    public PerfilController(PerfilService perfis) {
+        this.perfis = perfis;
     }
 
     @PostMapping
-    public ResponseEntity<PerfilResponse> criarPerfil(
-            @Valid @RequestBody PerfilRequest perfilRequest){
-        PerfilResponse perfil = perfilService.criarPerfil(perfilRequest);
-
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(perfil);
+    @ResponseStatus(HttpStatus.CREATED)
+    public PerfilResponse criar(Principal conta, @Valid @RequestBody PerfilRequest pedido) {
+        return perfis.criarPerfil(conta.getName(), pedido);
     }
 
-    @PostMapping("{id}/pesos")
-    public ResponseEntity<Void> registrarPeso(
-            @PathVariable Long id,
-            @Valid @RequestBody HistoricoPesoRequest request){
-
-        perfilService.registrarPeso(id, request);
-
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    @GetMapping("/me")
+    public PerfilResponse meu(Principal conta) {
+        return perfis.buscar(conta.getName(), null);
     }
 
-    @GetMapping("{id}")
-    public PerfilResponse buscarPorId(@PathVariable Long id){
-        return perfilService.buscarPorId(id);
+    @GetMapping("/{id}")
+    public PerfilResponse buscar(Principal conta, @PathVariable long id) {
+        return perfis.buscar(conta.getName(), id);
     }
 
-    @GetMapping("{id}/tmb")
-    public BigDecimal calcularTMB(@PathVariable Long id){
-        return perfilService.calcularTMB(id);
+    @PutMapping("/{id}")
+    public PerfilResponse atualizar(Principal conta, @PathVariable long id, @Valid @RequestBody PerfilRequest pedido) {
+        return perfis.atualizar(conta.getName(), id, pedido);
     }
 
-    @GetMapping("{id}/tmt")
-    public BigDecimal calcularTMT(@PathVariable Long id){
-        return perfilService.calcularTMT(id);
+    @PostMapping("/{id}/pesos")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void pesar(Principal conta, @PathVariable long id, @Valid @RequestBody HistoricoPesoRequest pedido) {
+        perfis.registrarPeso(conta.getName(), id, pedido);
     }
 
-    @GetMapping("{id}/calorias")
-    public BigDecimal calcularMetaCalorica(@PathVariable Long id){
-        return perfilService.calcularMetaCalorica(id);
+    @GetMapping("/{id}/pesos")
+    public List<PerfilService.Pesagem> pesos(Principal conta, @PathVariable long id) {
+        return perfis.historico(conta.getName(), id);
     }
 
+    @GetMapping("/{id}/tmb")
+    public BigDecimal tmb(Principal conta, @PathVariable long id) {
+        return buscar(conta, id).tmb();
+    }
+
+    @GetMapping("/{id}/tmt")
+    public BigDecimal get(Principal conta, @PathVariable long id) {
+        return buscar(conta, id).get();
+    }
+
+    @GetMapping("/{id}/calorias")
+    public BigDecimal calorias(Principal conta, @PathVariable long id) {
+        var meta = buscar(conta, id).meta();
+        return meta == null ? null : meta.calorias();
+    }
 }

@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Entrar no BulkTrack</title>
+  <link rel="stylesheet" href="/assets/style.css">
+  <script type="module" src="/assets/login.js"></script>
+</head>
+<body>
+<header class="topo"><div class="limite barra"><a class="marca" href="/">Bulk<span>Track</span></a></div></header>
+<main class="limite login">
+  <form method="post" action="/login" class="painel">
+    <h1>Entrar</h1>
+    <p id="mensagem" role="status"></p>
+    <input type="hidden" name="_csrf">
+    <label>Usuário <input name="username" autocomplete="username" required></label>
+    <label>Senha <input type="password" name="password" autocomplete="current-password" required></label>
+    <button disabled>Entrar</button>
+  </form>
+</main>
+</body>
+</html>

@@ -12,6 +12,18 @@ import jakarta.persistence.Enumerated;
 
 @Entity
 public class Perfil {
+    @Column(unique = true)
+    private Long contaId;
+    @Enumerated(EnumType.STRING)
+    private bulktrack.enums.ParametroTmb parametroTmb;
+    private String fuso = "America/Fortaleza";
+
+    public Long getContaId() { return contaId; }
+    public void setContaId(Long contaId) { this.contaId = contaId; }
+    public bulktrack.enums.ParametroTmb getParametroTmb() { return parametroTmb; }
+    public void setParametroTmb(bulktrack.enums.ParametroTmb parametroTmb) { this.parametroTmb = parametroTmb; }
+    public String getFuso() { return fuso; }
+    public void setFuso(String fuso) { this.fuso = fuso; }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

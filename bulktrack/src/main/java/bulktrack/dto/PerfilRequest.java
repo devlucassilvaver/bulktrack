@@ -1,104 +1,20 @@
 package bulktrack.dto;
 
-import bulktrack.enums.NivelAtividade;
-import bulktrack.enums.Objetivo;
-import bulktrack.enums.Sexo;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import bulktrack.enums.*;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-public class PerfilRequest {
-
-    @NotBlank
-    private String nome;
-
-    @NotNull
-    private LocalDate dataNascimento;
-
-    @NotNull
-    @Positive
-    private BigDecimal altura;
-
-    @NotNull
-    @Positive
-    private BigDecimal pesoAtual;
-
-    @NotNull
-    private NivelAtividade nivelAtividade;
-
-    @NotNull
-    private Objetivo objetivo;
-
-    @NotNull
-    @Positive
-    private BigDecimal percentualObjetivo;
-
-    @NotNull
-    private Sexo sexo;
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public LocalDate getDataNascimento() {
-        return dataNascimento;
-    }
-
-    public void setDataNascimento(LocalDate dataNascimento) {
-        this.dataNascimento = dataNascimento;
-    }
-
-    public BigDecimal getAltura() {
-        return altura;
-    }
-
-    public void setAltura(BigDecimal altura) {
-        this.altura = altura;
-    }
-
-    public BigDecimal getPesoAtual() {
-        return pesoAtual;
-    }
-
-    public void setPesoAtual(BigDecimal pesoAtual) {
-        this.pesoAtual = pesoAtual;
-    }
-
-    public BigDecimal getPercentualObjetivo() {
-        return percentualObjetivo;
-    }
-
-    public void setPercentualObjetivo(BigDecimal percentualObjetivo) {
-        this.percentualObjetivo = percentualObjetivo;
-    }
-
-    public NivelAtividade getNivelAtividade() {
-        return nivelAtividade;
-    }
-
-    public void setNivelAtividade(NivelAtividade nivelAtividade) {
-        this.nivelAtividade = nivelAtividade;
-    }
-
-    public Objetivo getObjetivo() {
-        return objetivo;
-    }
-
-    public void setObjetivo(Objetivo objetivo) {
-        this.objetivo = objetivo;
-    }
-
-    public Sexo getSexo() {
-        return sexo;
-    }
-
-    public void setSexo(Sexo sexo) {
-        this.sexo = sexo;
-    }
-}
+public record PerfilRequest(
+        @NotBlank @Size(max = 255) String nome,
+        @NotNull LocalDate dataNascimento,
+        @NotNull @DecimalMin("0.50") @DecimalMax("2.80") @Digits(integer = 1, fraction = 2) BigDecimal altura,
+        @NotNull @DecimalMin("1.00") @DecimalMax("700") @Digits(integer = 3, fraction = 2) BigDecimal pesoAtual,
+        @NotNull NivelAtividade nivelAtividade,
+        @NotNull Objetivo objetivo,
+        @DecimalMin("0") @DecimalMax("50") @Digits(integer = 2, fraction = 2) BigDecimal percentualObjetivo,
+        Sexo sexo,
+        @NotNull ParametroTmb parametroTmb,
+        @Size(max = 64) String fuso,
+        @Valid MetaNutricional metaPersonalizada) {}
