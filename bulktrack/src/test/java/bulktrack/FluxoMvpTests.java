@@ -119,11 +119,16 @@ class FluxoMvpTests {
         });
         server.start();
         try {
-            var fonte = new FoodDataCentral("chave-simulada", "http://127.0.0.1:" + server.getAddress().getPort());
+            var url = "http://127.0.0.1:" + server.getAddress().getPort();
+            assertEquals(1, new FoodDataCentral("", url).buscar("arroz cozido").size());
+            assertTrue(consultas.remove().contains("api_key=DEMO_KEY"));
+            var fonte = new FoodDataCentral("chave-simulada", url);
             var cozidos = fonte.buscar("arroz cozido");
             assertEquals(1, cozidos.size());
             var alimento = cozidos.getFirst();
-            assertTrue(consultas.remove().contains("query=rice white cooked"));
+            var consulta = consultas.remove();
+            assertTrue(consulta.contains("query=rice white cooked"));
+            assertTrue(consulta.contains("api_key=chave-simulada"));
             assertEquals("Rice, white, uncooked", fonte.buscar("arroz cru").getFirst().nome());
             assertTrue(consultas.remove().contains("query=rice white raw"));
             assertEquals(130, alimento.por100g().calorias().intValueExact());
@@ -131,8 +136,6 @@ class FluxoMvpTests {
         } finally {
             server.stop(0);
         }
-        assertThrows(org.springframework.web.server.ResponseStatusException.class,
-                () -> new FoodDataCentral("", "http://127.0.0.1").buscar("arroz"));
     }
 
     private class Sessao {

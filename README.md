@@ -30,7 +30,7 @@ $env:DB_USERNAME = 'bulktrack_local'
 $env:DB_PASSWORD = [System.Net.NetworkCredential]::new('', (Read-Host 'Senha MySQL' -AsSecureString)).Password
 $env:BULKTRACK_USUARIO = Read-Host 'Novo usuário local'
 $env:BULKTRACK_SENHA = [System.Net.NetworkCredential]::new('', (Read-Host 'Senha da conta local' -AsSecureString)).Password
-# Opcional para habilitar a busca USDA
+# Opcional para usar uma chave USDA própria
 $env:FDC_API_KEY = [System.Net.NetworkCredential]::new('', (Read-Host 'Chave USDA' -AsSecureString)).Password
 .\mvnw.cmd spring-boot:run
 ```
@@ -68,7 +68,7 @@ O cálculo usa o peso atual do perfil. Uma pesagem por dia mais recente, ou a ú
 
 ## Alimentação
 
-A busca no back-end usa [USDA FoodData Central](https://fdc.nal.usda.gov/api-guide/), dados SR Legacy por 100 g, publicados sob CC0. A chave gratuita é fornecida pelo data.gov. O catálogo é dos EUA, os resultados aparecem em inglês e a cobertura de marcas e preparações brasileiras é limitada. Alguns termos comuns são traduzidos, incluindo arroz branco e integral nas versões crua e cozida. Confira a descrição antes de selecionar.
+A busca no back-end usa [USDA FoodData Central](https://fdc.nal.usda.gov/api-guide/), dados SR Legacy por 100 g, publicados sob CC0. Sem uma chave própria, o BulkTrack usa a chave pública DEMO_KEY, limitada a 30 consultas por hora e 50 por dia por IP. Defina FDC_API_KEY com uma chave gratuita do data.gov para uso mais frequente. O catálogo é dos EUA, os resultados aparecem em inglês e a cobertura de marcas e preparações brasileiras é limitada. Alguns termos comuns são traduzidos, incluindo arroz branco e integral nas versões crua e cozida. Confira a descrição antes de selecionar.
 
 Na tela Alimentação, busque **arroz cozido**, selecione uma descrição que contenha **cooked**, digite **200 g** e ajuste o horário para **12h30**. A prévia é calculada pela API. Se a busca estiver indisponível ou o alimento não aparecer, preencha manualmente o nome e a composição por 100 g. O consumo armazena os valores usados no registro. Alterar quantidade ou horário não consulta a fonte novamente.
 

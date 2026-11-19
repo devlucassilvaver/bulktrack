@@ -8,5 +8,5 @@ $env:DB_PASSWORD = [System.Net.NetworkCredential]::new('', (Read-Host 'Senha MyS
 # $env:BULKTRACK_SENHA = [System.Net.NetworkCredential]::new('', (Read-Host 'Senha local' -AsSecureString)).Password
 # $env:BULKTRACK_PERFIL_LEGADO = '123'
 
-# Descomente para habilitar a busca nutricional.
+# Descomente para usar uma chave própria em vez da chave pública de demonstração.
 # $env:FDC_API_KEY = [System.Net.NetworkCredential]::new('', (Read-Host 'Chave USDA' -AsSecureString)).Password

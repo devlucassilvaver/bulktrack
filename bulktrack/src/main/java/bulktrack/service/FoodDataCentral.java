@@ -27,13 +27,10 @@ public class FoodDataCentral {
                 .connectTimeout(Duration.ofSeconds(3)).build());
         factory.setReadTimeout(Duration.ofSeconds(5));
         this.client = RestClient.builder().baseUrl(url).requestFactory(factory).build();
-        this.chave = chave;
+        this.chave = chave.isBlank() ? "DEMO_KEY" : chave.strip();
     }
 
     public List<Alimento> buscar(String pesquisa) {
-        if (chave.isBlank()) {
-            throw new ResponseStatusException(SERVICE_UNAVAILABLE, "Busca USDA sem chave. Use o cadastro manual.");
-        }
         String consulta = traduzir(pesquisa);
         try {
             var resposta = client.get().uri(builder -> builder.path("/fdc/v1/foods/search")
