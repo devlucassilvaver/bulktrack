@@ -9,6 +9,8 @@ import java.net.http.HttpClient;
 import java.text.Normalizer;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Map;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -25,7 +27,11 @@ import static org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE;
 
 @Service
 public class TacoClient {
-    private static final int LIMITE_RESULTADOS = 10;
+    private static final int LIMITE_RESULTADOS = 3;
+    private static final List<Integer> ARROZ_PRIORITARIO = List.of(3, 1, 4);
+    private static final Map<Integer, String> NOMES_ARROZ = Map.of(
+            1, "Arroz integral cozido", 2, "Arroz integral cru",
+            3, "Arroz branco cozido", 4, "Arroz branco cru");
     private static final Set<String> CONECTIVOS = Set.of("de", "da", "do", "das", "dos", "e");
     private final RestClient client;
 
@@ -46,10 +52,16 @@ public class TacoClient {
             if (catalogo == null || catalogo.foods() == null) {
                 throw indisponivel();
             }
-            var encontrados = catalogo.foods().stream()
+            var resultados = catalogo.foods().stream()
                     .filter(item -> item.id() > 0 && item.description() != null
-                            && palavras(item.description()).containsAll(termos))
-                    .limit(LIMITE_RESULTADOS)
+                            && corresponde(item, termos));
+            if (termos.equals(List.of("arroz"))) {
+                resultados = resultados.sorted(Comparator.comparingInt(item -> {
+                    int posicao = ARROZ_PRIORITARIO.indexOf(item.id());
+                    return posicao < 0 ? ARROZ_PRIORITARIO.size() : posicao;
+                }));
+            }
+            var encontrados = resultados.limit(LIMITE_RESULTADOS)
                     .toList();
             if (encontrados.isEmpty()) {
                 return List.of();
@@ -77,7 +89,15 @@ public class TacoClient {
         }
         var nutrientes = new Nutrientes(ajustar(dados.calorias()), ajustar(dados.carboidratos()),
                 ajustar(dados.proteinas()), ajustar(dados.lipidios()));
-        return new Alimento(item.description(), nutrientes, "TACO (NEPA/Unicamp) " + item.id());
+        return new Alimento(nome(item), nutrientes, "TACO (NEPA/Unicamp) " + item.id());
+    }
+
+    private static boolean corresponde(Item item, List<String> termos) {
+        return palavras(item.description()).containsAll(termos) || palavras(nome(item)).containsAll(termos);
+    }
+
+    private static String nome(Item item) {
+        return NOMES_ARROZ.getOrDefault(item.id(), item.description());
     }
 
     private static List<String> palavras(String texto) {

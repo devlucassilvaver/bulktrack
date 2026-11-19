@@ -103,8 +103,9 @@ class FluxoMvpTests {
     void fonteTacoDistinguePreparoEAceitaBuscaSemAcentos() throws Exception {
         var server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
         server.createContext("/foods.json", exchange -> responderJson(exchange, """
-                {"total":3,"foods":[{"id":1,"description":"Arroz, integral, cozido"},
-                  {"id":2,"description":"Arroz, integral, cru"},{"id":3,"description":"Feijão, preto, cozido"}]}
+                {"total":5,"foods":[{"id":1,"description":"Arroz, integral, cozido"},
+                  {"id":2,"description":"Arroz, integral, cru"},{"id":3,"description":"Arroz, tipo 1, cozido"},
+                  {"id":4,"description":"Arroz, tipo 1, cru"},{"id":448,"description":"Feijão, preto, cozido"}]}
                 """));
         server.createContext("/foods/1.json", exchange -> responderJson(exchange, """
                 {"id":1,"energy_kcal":123.53489,"protein_g":2.58825,"carbohydrate_g":25.80975,"lipids_g":null}
@@ -113,21 +114,30 @@ class FluxoMvpTests {
                 {"id":2,"energy_kcal":360}
                 """));
         server.createContext("/foods/3.json", exchange -> responderJson(exchange, """
-                {"id":3,"energy_kcal":77}
+                {"id":3,"energy_kcal":128}
+                """));
+        server.createContext("/foods/4.json", exchange -> responderJson(exchange, """
+                {"id":4,"energy_kcal":358}
+                """));
+        server.createContext("/foods/448.json", exchange -> responderJson(exchange, """
+                {"id":448,"energy_kcal":77}
                 """));
         server.start();
         try {
             var fonte = new TacoClient("http://127.0.0.1:" + server.getAddress().getPort());
-            var cozidos = fonte.buscar("cozido arroz");
+            assertEquals(List.of("Arroz branco cozido", "Arroz integral cozido", "Arroz branco cru"),
+                    fonte.buscar("arroz").stream().map(bulktrack.dto.Alimento::nome).toList());
+            var cozidos = fonte.buscar("cozido arroz integral");
             assertEquals(1, cozidos.size());
             var alimento = cozidos.getFirst();
-            assertEquals("Arroz, integral, cozido", alimento.nome());
+            assertEquals("Arroz integral cozido", alimento.nome());
             assertEquals("TACO (NEPA/Unicamp) 1", alimento.fonte());
             assertEquals(new java.math.BigDecimal("123.5349"), alimento.por100g().calorias());
             assertEquals(new java.math.BigDecimal("25.8098"), alimento.por100g().carboidratos());
             assertEquals(new java.math.BigDecimal("2.5883"), alimento.por100g().proteinas());
             assertNull(alimento.por100g().lipidios());
-            assertEquals("Arroz, integral, cru", fonte.buscar("arroz cru").getFirst().nome());
+            assertEquals("Arroz integral cru", fonte.buscar("arroz integral cru").getFirst().nome());
+            assertEquals("Arroz branco cru", fonte.buscar("arroz branco cru").getFirst().nome());
             assertEquals("Feijão, preto, cozido", fonte.buscar("feijao preto").getFirst().nome());
             assertTrue(fonte.buscar("whey marca desconhecida").isEmpty());
             server.removeContext("/foods/1.json");

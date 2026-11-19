@@ -66,7 +66,7 @@ O cálculo usa o peso atual do perfil. Uma pesagem por dia mais recente, ou a ú
 
 ## Alimentação
 
-A busca no back-end usa a [API comunitária da TACO](https://brolesi.github.io/taco/api.dc.html), baseada na [Tabela Brasileira de Composição de Alimentos do NEPA/Unicamp](https://nepa.unicamp.br/publicacoes/), 4ª edição. A busca exige internet e funciona sem chave. Ela retorna até 10 alimentos em português com nutrientes por 100 g. Produtos de marcas específicas podem exigir cadastro manual.
+A busca no back-end usa a [API comunitária da TACO](https://brolesi.github.io/taco/api.dc.html), baseada na [Tabela Brasileira de Composição de Alimentos do NEPA/Unicamp](https://nepa.unicamp.br/publicacoes/), 4ª edição. A busca exige internet e funciona sem chave. Ela retorna até três alimentos em português com nutrientes por 100 g. Produtos de marcas específicas podem exigir cadastro manual.
 
 Na tela Alimentação, busque **arroz cozido**, selecione uma descrição que contenha **cozido**, digite **200 g** e ajuste o horário para **12h30**. A prévia é calculada pela API. Se a busca estiver indisponível ou o alimento não aparecer, preencha manualmente o nome e a composição por 100 g. O consumo armazena os valores usados no registro. Alterar quantidade ou horário não consulta a fonte novamente.
 
