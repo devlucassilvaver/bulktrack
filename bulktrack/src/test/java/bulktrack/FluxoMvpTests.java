@@ -1,6 +1,6 @@
 package bulktrack;
 
-import bulktrack.service.FoodDataCentral;
+import bulktrack.service.TacoClient;
 import com.sun.net.httpserver.HttpServer;
 import java.net.*;
 import java.net.http.*;
@@ -100,41 +100,52 @@ class FluxoMvpTests {
     }
 
     @Test
-    void fonteUsdaSimuladaConverteBuscaETrataDadosAusentes() throws Exception {
+    void fonteTacoDistinguePreparoEAceitaBuscaSemAcentos() throws Exception {
         var server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
-        var consultas = new java.util.concurrent.ConcurrentLinkedQueue<String>();
-        server.createContext("/fdc/v1/foods/search", exchange -> {
-            consultas.add(exchange.getRequestURI().getQuery());
-            String resposta = """
-                    {"foods":[{"fdcId":1,"description":"Rice, white, cooked","extra":true,
-                    "foodNutrients":[{"nutrientId":1008,"value":130},{"nutrientId":1005,"value":28.2}]},
-                    {"fdcId":2,"description":"Rice, white, uncooked"}]}
-                    """;
-            byte[] bytes = resposta.getBytes(StandardCharsets.UTF_8);
-            exchange.getResponseHeaders().set("Content-Type", "application/json");
-            exchange.sendResponseHeaders(200, bytes.length);
-            try (var body = exchange.getResponseBody()) {
-                body.write(bytes);
-            }
-        });
+        server.createContext("/foods.json", exchange -> responderJson(exchange, """
+                {"total":3,"foods":[{"id":1,"description":"Arroz, integral, cozido"},
+                  {"id":2,"description":"Arroz, integral, cru"},{"id":3,"description":"Feijão, preto, cozido"}]}
+                """));
+        server.createContext("/foods/1.json", exchange -> responderJson(exchange, """
+                {"id":1,"energy_kcal":123.53489,"protein_g":2.58825,"carbohydrate_g":25.80975,"lipids_g":null}
+                """));
+        server.createContext("/foods/2.json", exchange -> responderJson(exchange, """
+                {"id":2,"energy_kcal":360}
+                """));
+        server.createContext("/foods/3.json", exchange -> responderJson(exchange, """
+                {"id":3,"energy_kcal":77}
+                """));
         server.start();
         try {
-            var url = "http://127.0.0.1:" + server.getAddress().getPort();
-            assertEquals(1, new FoodDataCentral("", url).buscar("arroz cozido").size());
-            assertTrue(consultas.remove().contains("api_key=DEMO_KEY"));
-            var fonte = new FoodDataCentral("chave-simulada", url);
-            var cozidos = fonte.buscar("arroz cozido");
+            var fonte = new TacoClient("http://127.0.0.1:" + server.getAddress().getPort());
+            var cozidos = fonte.buscar("cozido arroz");
             assertEquals(1, cozidos.size());
             var alimento = cozidos.getFirst();
-            var consulta = consultas.remove();
-            assertTrue(consulta.contains("query=rice white cooked"));
-            assertTrue(consulta.contains("api_key=chave-simulada"));
-            assertEquals("Rice, white, uncooked", fonte.buscar("arroz cru").getFirst().nome());
-            assertTrue(consultas.remove().contains("query=rice white raw"));
-            assertEquals(130, alimento.por100g().calorias().intValueExact());
+            assertEquals("Arroz, integral, cozido", alimento.nome());
+            assertEquals("TACO (NEPA/Unicamp) 1", alimento.fonte());
+            assertEquals(new java.math.BigDecimal("123.5349"), alimento.por100g().calorias());
+            assertEquals(new java.math.BigDecimal("25.8098"), alimento.por100g().carboidratos());
+            assertEquals(new java.math.BigDecimal("2.5883"), alimento.por100g().proteinas());
             assertNull(alimento.por100g().lipidios());
+            assertEquals("Arroz, integral, cru", fonte.buscar("arroz cru").getFirst().nome());
+            assertEquals("Feijão, preto, cozido", fonte.buscar("feijao preto").getFirst().nome());
+            assertTrue(fonte.buscar("whey marca desconhecida").isEmpty());
+            server.removeContext("/foods/1.json");
+            var erro = assertThrows(org.springframework.web.server.ResponseStatusException.class,
+                    () -> fonte.buscar("arroz cozido"));
+            assertEquals(503, erro.getStatusCode().value());
         } finally {
             server.stop(0);
+        }
+    }
+
+    private static void responderJson(com.sun.net.httpserver.HttpExchange exchange, String resposta)
+            throws java.io.IOException {
+        byte[] bytes = resposta.getBytes(StandardCharsets.UTF_8);
+        exchange.getResponseHeaders().set("Content-Type", "application/json");
+        exchange.sendResponseHeaders(200, bytes.length);
+        try (var body = exchange.getResponseBody()) {
+            body.write(bytes);
         }
     }
 

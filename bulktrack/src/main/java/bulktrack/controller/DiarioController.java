@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class DiarioController {
     private final DiarioService diario;
-    private final FoodDataCentral fonte;
+    private final TacoClient fonte;
 
-    public DiarioController(DiarioService diario, FoodDataCentral fonte) {
+    public DiarioController(DiarioService diario, TacoClient fonte) {
         this.diario = diario;
         this.fonte = fonte;
     }

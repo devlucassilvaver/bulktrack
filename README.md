@@ -30,8 +30,6 @@ $env:DB_USERNAME = 'bulktrack_local'
 $env:DB_PASSWORD = [System.Net.NetworkCredential]::new('', (Read-Host 'Senha MySQL' -AsSecureString)).Password
 $env:BULKTRACK_USUARIO = Read-Host 'Novo usuário local'
 $env:BULKTRACK_SENHA = [System.Net.NetworkCredential]::new('', (Read-Host 'Senha da conta local' -AsSecureString)).Password
-# Opcional para usar uma chave USDA própria
-$env:FDC_API_KEY = [System.Net.NetworkCredential]::new('', (Read-Host 'Chave USDA' -AsSecureString)).Password
 .\mvnw.cmd spring-boot:run
 ```
 
@@ -68,9 +66,9 @@ O cálculo usa o peso atual do perfil. Uma pesagem por dia mais recente, ou a ú
 
 ## Alimentação
 
-A busca no back-end usa [USDA FoodData Central](https://fdc.nal.usda.gov/api-guide/), dados SR Legacy por 100 g, publicados sob CC0. Sem uma chave própria, o BulkTrack usa a chave pública DEMO_KEY, limitada a 30 consultas por hora e 50 por dia por IP. Defina FDC_API_KEY com uma chave gratuita do data.gov para uso mais frequente. O catálogo é dos EUA, os resultados aparecem em inglês e a cobertura de marcas e preparações brasileiras é limitada. Alguns termos comuns são traduzidos, incluindo arroz branco e integral nas versões crua e cozida. Confira a descrição antes de selecionar.
+A busca no back-end usa a [API comunitária da TACO](https://brolesi.github.io/taco/api.dc.html), baseada na [Tabela Brasileira de Composição de Alimentos do NEPA/Unicamp](https://nepa.unicamp.br/publicacoes/), 4ª edição. A busca exige internet e funciona sem chave. Ela retorna até 10 alimentos em português com nutrientes por 100 g. Produtos de marcas específicas podem exigir cadastro manual.
 
-Na tela Alimentação, busque **arroz cozido**, selecione uma descrição que contenha **cooked**, digite **200 g** e ajuste o horário para **12h30**. A prévia é calculada pela API. Se a busca estiver indisponível ou o alimento não aparecer, preencha manualmente o nome e a composição por 100 g. O consumo armazena os valores usados no registro. Alterar quantidade ou horário não consulta a fonte novamente.
+Na tela Alimentação, busque **arroz cozido**, selecione uma descrição que contenha **cozido**, digite **200 g** e ajuste o horário para **12h30**. A prévia é calculada pela API. Se a busca estiver indisponível ou o alimento não aparecer, preencha manualmente o nome e a composição por 100 g. O consumo armazena os valores usados no registro. Alterar quantidade ou horário não consulta a fonte novamente.
 
 O dashboard filtra pelo dia no fuso IANA do perfil, inicialmente `America/Fortaleza`. Consumos ficam gravados como instantes. Alterar o fuso pode mover um consumo próximo à meia-noite entre datas locais. Um nutriente ausente fica indisponível. O resumo exibe apenas a soma conhecida quando parcial, com a contagem de registros incompletos e sem saldo definitivo para aquele nutriente.
 
@@ -98,7 +96,7 @@ Use a sessão criada pelo formulário de login. Clientes HTTP podem obter o toke
 .\mvnw.cmd test
 ```
 
-A suíte usa H2 em memória no modo MySQL e simula o USDA por HTTP local. Ela cobre metas, pesagens, histórico, porções, totais, treinos, autenticação com sessão, CSRF e isolamento entre contas. Para mudar as cores, edite o bloco `:root` de `bulktrack/src/main/resources/static/assets/style.css`.
+A suíte usa H2 em memória no modo MySQL e simula a API TACO por HTTP local. Ela cobre metas, pesagens, histórico, porções, totais, treinos, autenticação com sessão, CSRF e isolamento entre contas. Para mudar as cores, edite o bloco `:root` de `bulktrack/src/main/resources/static/assets/style.css`.
 
 ## Antes de disponibilizar a convidados
 
